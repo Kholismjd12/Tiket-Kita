@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Kelola Notifikasi - TiketKita</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+</head>
+<script>
+  if (localStorage.getItem('userRole') !== 'admin') {
+    window.location.href = '/login-register/login.html';
+  }
+</script>
+<body class="gradient-bg">
+  <div class="d-flex">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h4><i class="bi bi-ticket-perforated-fill me-2"></i>TiketKita</h4>
+      <a href="dashboard-admin.html"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+      <a href="event-pending.html">
+        <i class="bi bi-calendar-plus me-2"></i>Event Didaftarkan
+        <span class="badge bg-danger ms-2" id="eventPendingCount" style="display: none;">0</span>
+      </a>
+      <a href="monitoring-event.html"><i class="bi bi-bar-chart-fill me-2"></i>Monitoring</a>
+      <a href="admin-pending.html">
+        <i class="bi bi-person-plus-fill me-2"></i>Admin Mendaftar
+        <span class="badge bg-danger ms-2" id="pendingCount" style="display: none;">0</span>
+      </a>
+      <a href="notifikasi.html" class="active"><i class="bi bi-megaphone-fill me-2"></i>Kelola Notifikasi</a>
+      <a href="update-admin.html" id="menuUpdate"><i class="bi bi-person-lines-fill me-2"></i>Update Akun</a>
+      <a href="/dashboard.html" class="btn btn-outline-light mb-3"><i class="bi bi-house-door me-1"></i> Home</a>
+      <button class="btn btn-outline-light mt-4 w-100" id="btnLogout"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
+    </div>
+
+    <!-- Konten -->
+    <div class="main-content p-4 w-100">
+      <h3 class="text-white mb-4">Kelola Notifikasi</h3>
+    <div class="d-flex justify-content-end px-3 py-2">
+        <button class="btn btn-success" onclick="showAddModal()">
+            <i class="bi bi-plus-circle me-1"></i>Tambah Notifikasi
+        </button>
+    </div>
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <i class="bi bi-bullhorn me-2"></i>Daftar Notifikasi
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-striped mb-0 table-hover">
+              <thead class="table-dark">
+                <tr>
+                  <th>#</th>
+                  <th>Judul</th>
+                  <th>Pesan</th>
+                  <th>Dibuat</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="notifList">
+                <tr><td colspan="5" class="text-center p-3">Memuat data...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Edit -->
+  <div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="formEditNotif">
+          <div class="modal-header bg-warning text-white">
+            <h5 class="modal-title"><i class="bi bi-pencil-fill me-2"></i>Edit Notifikasi</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="editId">
+            <div class="mb-3">
+              <label for="editTitle" class="form-label">Judul</label>
+              <input type="text" class="form-control" id="editTitle" required>
+            </div>
+            <div class="mb-3">
+              <label for="editMessage" class="form-label">Pesan</label>
+              <textarea class="form-control" id="editMessage" rows="3" required></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <button class="btn btn-warning" type="submit">Simpan Perubahan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Tambah -->
+<div class="modal fade" id="addModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="formAddNotif">
+        <div class="modal-header bg-success text-white">
+          <h5 class="modal-title"><i class="bi bi-plus-circle me-2"></i>Tambah Notifikasi</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="addTitle" class="form-label">Judul</label>
+            <input type="text" class="form-control" id="addTitle" required>
+          </div>
+          <div class="mb-3">
+            <label for="addMessage" class="form-label">Pesan</label>
+            <textarea class="form-control" id="addMessage" rows="3" required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button class="btn btn-success" type="submit">Kirim Notifikasi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+  <!-- Toast Feedback -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="notifToast" class="toast text-white bg-success border-0" role="alert">
+      <div class="d-flex">
+        <div class="toast-body" id="notifToastBody">Berhasil!</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+  async function loadNotifikasi() {
+  const email = localStorage.getItem('userEmail');
+  const role = localStorage.getItem('userRole');
+
+  if (!email || role !== 'admin') {
+    showToast('Akses ditolak: bukan admin', 'danger');
+    return;
+  }
+
+  try {
+    const res = await fetch(`http://localhost:3000/api/admin/list-notifications?email=${encodeURIComponent(email)}`);
+    const data = await res.json();
+    const list = document.getElementById('notifList');
+    list.innerHTML = '';
+
+    if (!Array.isArray(data)) {
+      list.innerHTML = `<tr><td colspan="5" class="text-center text-danger p-3">Gagal memuat notifikasi: ${data.error || 'Terjadi kesalahan'}</td></tr>`;
+      return;
+    }
+
+    if (data.length === 0) {
+      list.innerHTML = `<tr><td colspan="5" class="text-center p-3">Belum ada notifikasi</td></tr>`;
+      return;
+    }
+
+    data.forEach((notif, i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${i + 1}</td>
+        <td>${notif.title}</td>
+        <td>${notif.message}</td>
+        <td>${new Date(notif.created_at).toLocaleString()}</td>
+        <td>
+          <button class="btn btn-sm btn-warning me-2" onclick="showEditModal(${notif.notification_id}, '${notif.title}', \`${notif.message}\`)"><i class="bi bi-pencil-square"></i></button>
+          <button class="btn btn-sm btn-danger" onclick="deleteNotif(${notif.notification_id})"><i class="bi bi-trash-fill"></i></button>
+        </td>
+      `;
+      list.appendChild(tr);
+    });
+  } catch (err) {
+    console.error('❌ Gagal fetch notifikasi:', err.message);
+    showToast('Gagal memuat notifikasi', 'danger');
+  }}
+
+    function showAddModal() {
+  document.getElementById('addTitle').value = '';
+  document.getElementById('addMessage').value = '';
+  new bootstrap.Modal(document.getElementById('addModal')).show();
+}
+
+document.getElementById('formAddNotif').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const title = document.getElementById('addTitle').value;
+  const message = document.getElementById('addMessage').value;
+  const email = localStorage.getItem('adminEmail');
+
+  try {
+    const res = await fetch('http://localhost:3000/api/admin/send-notification', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, title, message })
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      bootstrap.Modal.getInstance(document.getElementById('addModal')).hide();
+      showToast('Notifikasi berhasil ditambahkan', 'success');
+      loadNotifikasi();
+    } else {
+      showToast(data.error || 'Gagal menambahkan notifikasi', 'danger');
+    }
+  } catch (err) {
+    showToast('Terjadi kesalahan saat menambahkan notifikasi', 'danger');
+  }
+});
+
+     function showEditModal(id, title, message) {
+    document.getElementById('editId').value = id;
+    document.getElementById('editTitle').value = title;
+    document.getElementById('editMessage').value = message;
+    new bootstrap.Modal(document.getElementById('editModal')).show();
+  }
+
+  // ✅ Perbaikan formEditNotif: kirim email juga
+  document.getElementById('formEditNotif').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('editId').value;
+    const title = document.getElementById('editTitle').value;
+    const message = document.getElementById('editMessage').value;
+    const email = localStorage.getItem('adminEmail');
+
+    const res = await fetch(`http://localhost:3000/api/admin/edit-notification/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, message, email }) // ✅ kirim email ke backend
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      await loadNotifikasi();
+      bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+      showToast('Notifikasi berhasil diperbarui');
+    } else {
+      showToast(data.error || 'Gagal mengedit notifikasi', 'danger');
+    }
+  });
+
+  // ✅ Perbaikan fungsi hapus notifikasi
+  async function deleteNotif(id) {
+    if (!confirm('Yakin ingin menghapus notifikasi ini?')) return;
+
+    const email = localStorage.getItem('adminEmail'); // ✅ ambil email admin
+
+    try {
+      const res = await fetch(`http://localhost:3000/api/admin/delete-notification/${id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }) // ✅ kirim email di body
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        await loadNotifikasi();
+        showToast('Notifikasi berhasil dihapus', 'success');
+      } else {
+        showToast(data.error || 'Gagal menghapus notifikasi', 'danger');
+      }
+    } catch (err) {
+      showToast('Terjadi kesalahan saat menghapus', 'danger');
+    }
+  }
+
+    async function updatePendingBadge() {
+      try {
+        const res = await fetch('http://localhost:3000/api/admin-pending');
+        const data = await res.json();
+        const badge = document.getElementById('pendingCount');
+        if (!badge) return;
+        if (data.length > 0) {
+          badge.textContent = data.length;
+          badge.style.display = 'inline-block';
+        } else {
+          badge.style.display = 'none';
+        }
+      } catch (err) {
+        console.warn('Gagal memuat admin pending:', err.message);
+      }
+    }
+
+    function showToast(message, type = 'success') {
+      const toastEl = document.getElementById('notifToast');
+      const toastBody = document.getElementById('notifToastBody');
+      toastBody.textContent = message;
+
+      const bgMap = {
+        success: 'bg-success',
+        danger: 'bg-danger',
+        warning: 'bg-warning',
+        info: 'bg-info'
+      };
+
+      toastEl.className = `toast text-white ${bgMap[type] || 'bg-success'} border-0`;
+      new bootstrap.Toast(toastEl).show();
+    }
+
+    document.getElementById('btnLogout').addEventListener('click', () => {
+      localStorage.clear();
+      window.location.href = '../../login-register/login.html';
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadNotifikasi();
+      updatePendingBadge();
+    });
+
+    async function updateEventPendingBadge() {
+    try {
+      const res = await fetch('/api/eo/event-pending');
+      const data = await res.json();
+      const badge = document.getElementById('eventPendingCount');
+      if (badge) {
+        const count = data.filter(ev =>
+          ev.status === 'pending' ||
+          ev.status === 'dibayar'
+        ).length;
+
+        badge.textContent = count;
+        badge.style.display = count > 0 ? 'inline-block' : 'none';
+      }
+    } catch (err) {
+      console.warn('Gagal memuat event pending:', err.message);
+    }
+  }
+    window.addEventListener('DOMContentLoaded', updateEventPendingBadge);
+  </script>
+</body>
+</html>
