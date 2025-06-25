@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Perbarui Akun - TiketKita</title>
+
+  <!-- Bootstrap dan Icon -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+
+  <!-- CSS Kustom -->
+  <link rel="stylesheet" href="../../assets/css/style.css">
+
+  <script>
+    if (!localStorage.getItem('userRole')) {
+      window.location.href = '/login-register/login-admin.html';
+    }
+  </script>
+</head>
+<body class="gradient-bg">
+  <div class="d-flex">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h4><i class="bi bi-ticket-perforated-fill me-2"></i>TiketKita</h4>
+      <a href="dashboard-admin.html"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+      <a href="event-pending.html">
+        <i class="bi bi-calendar-plus me-2"></i>Event Didaftarkan
+        <span class="badge bg-danger ms-2" id="eventPendingCount" style="display: none;">0</span>
+      </a>
+      <a href="monitoring-event.html"><i class="bi bi-bar-chart-fill me-2"></i>Monitoring</a>
+      <a href="admin-pending.html">
+        <i class="bi bi-person-plus-fill me-2"></i>Admin Mendaftar
+        <span class="badge bg-danger ms-2" id="pendingCount" style="display: none;">0</span>
+      </a>
+      <a href="notifikasi.html"><i class="bi bi-megaphone-fill me-2"></i>Kelola Notifikasi</a>
+      <a href="update-admin.html" id="menuUpdate" class="active"><i class="bi bi-person-lines-fill me-2"></i>Update Akun</a>
+      <a href="/dashboard.html" class="btn btn-outline-light mb-3">
+        <i class="bi bi-house-door me-1"></i> Home
+      </a>
+      <button class="btn btn-outline-light mt-4 w-100" id="btnLogout"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content p-4 w-100">
+      <h3 class="mb-4 text-white">Perbarui Akun Admin</h3>
+      <div class="card">
+        <div class="card-body">
+          <form id="adminUpdateForm" class="row g-3">
+            <div class="col-md-6">
+              <label for="updateName" class="form-label">Nama Baru</label>
+              <input type="text" class="form-control" id="updateName" placeholder="Masukkan nama baru">
+            </div>
+            <div class="col-md-6">
+              <label for="updatePassword" class="form-label">Password Baru</label>
+              <input type="password" class="form-control" id="updatePassword" placeholder="Masukkan password baru">
+            </div>
+            <div class="col-12 d-flex justify-content-between">
+              <button type="button" class="btn btn-outline-danger" id="btnDeleteAccount">
+                <i class="bi bi-trash me-1"></i>Hapus Akun
+              </button>
+              <button type="submit" class="btn btn-primary px-4">
+                <i class="bi bi-check-circle me-1"></i>Simpan Perubahan
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="feedbackToast" class="toast text-white bg-success border-0" role="alert">
+      <div class="d-flex">
+        <div class="toast-body" id="feedbackToastBody">Berhasil!</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Konfirmasi Hapus -->
+  <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title" id="deleteModalLabel"><i class="bi bi-exclamation-triangle me-2"></i>Konfirmasi Hapus Akun</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
+        </div>
+        <div class="modal-body">
+          <p>Apakah Anda yakin ingin menghapus akun ini secara permanen? Tindakan ini tidak dapat dibatalkan.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Ya, Hapus Akun</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Script -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const adminEmail = localStorage.getItem('adminEmail');
+    // Logout button
+    document.getElementById('btnLogout').addEventListener('click', () => {
+      localStorage.clear();
+      window.location.href = '../../login-register/login.html';
+    });
+
+    // Form update akun
+    document.getElementById('adminUpdateForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('updateName').value.trim();
+      const password = document.getElementById('updatePassword').value.trim();
+
+      if (!name && !password) return showToast('Isi minimal satu kolom', 'warning');
+
+      try {
+        const res = await fetch('http://localhost:3000/api/update-account', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: adminEmail, name, password })
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          if (name) localStorage.setItem('userName', name);
+          showToast(data.message || 'Berhasil diperbarui', 'success');
+          setTimeout(() => location.reload(), 2000);
+        } else {
+          showToast(data.error || 'Gagal memperbarui akun', 'danger');
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('Terjadi kesalahan saat update', 'danger');
+      }
+    });
+
+    // Modal konfirmasi hapus
+    document.getElementById('btnDeleteAccount').addEventListener('click', () => {
+      const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+      deleteModal.show();
+    });
+
+    document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+      try {
+        const res = await fetch('http://localhost:3000/api/delete-account', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: adminEmail })
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          showToast('Akun berhasil dihapus', 'success');
+          localStorage.clear();
+          setTimeout(() => window.location.href = '../../login-register/login.html', 2000);
+        } else {
+          showToast(data.error || 'Gagal menghapus akun', 'danger');
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('Terjadi kesalahan saat menghapus akun', 'danger');
+      }
+    });
+
+    // Fungsi Toast Bootstrap
+    function showToast(message, type = 'success') {
+      const toastEl = document.getElementById('feedbackToast');
+      const toastBody = document.getElementById('feedbackToastBody');
+      toastBody.textContent = message;
+      const bgMap = {
+        success: 'bg-success',
+        danger: 'bg-danger',
+        warning: 'bg-warning',
+        info: 'bg-info'
+      };
+      toastEl.className = `toast text-white ${bgMap[type] || 'bg-success'} border-0`;
+      new bootstrap.Toast(toastEl).show();
+    }
+
+    // Badge admin pending
+    async function updatePendingBadge() {
+      try {
+        const res = await fetch('http://localhost:3000/api/admin-pending');
+        const data = await res.json();
+        const badge = document.getElementById('pendingCount');
+        if (!badge) return;
+
+        if (data.length > 0) {
+          badge.textContent = data.length;
+          badge.style.display = 'inline-block';
+        } else {
+          badge.style.display = 'none';
+        }
+      } catch (err) {
+        console.warn('Gagal memuat admin pending:', err.message);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', updatePendingBadge);
+
+    async function updateEventPendingBadge() {
+    try {
+      const res = await fetch('/api/eo/event-pending');
+      const data = await res.json();
+      const badge = document.getElementById('eventPendingCount');
+      if (badge) {
+        const count = data.filter(ev =>
+          ev.status === 'pending' ||
+          ev.status === 'dibayar'
+        ).length;
+
+        badge.textContent = count;
+        badge.style.display = count > 0 ? 'inline-block' : 'none';
+      }
+    } catch (err) {
+      console.warn('Gagal memuat event pending:', err.message);
+    }
+  }
+    window.addEventListener('DOMContentLoaded', updateEventPendingBadge);
+  </script>
+</body>
+</html>
