@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TiketKita - Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body class="gradient-bg">
+
+  <!-- Navbar -->
+<!-- Navbar -->
+<header>
+  <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top shadow-sm px-3 px-md-5">
+    <div class="container d-flex justify-content-between align-items-center">
+      
+      <!-- Logo & Bell -->
+      <div class="d-flex align-items-center gap-2">
+        <div class="navbar-brand text-white fw-bold d-flex align-items-center gap-2" style="user-select: none;">
+          <i class="bi bi-ticket-perforated-fill fs-4"></i>
+          <span class="fs-5">TIKETKITA</span>
+        </div>
+
+        <!-- Notification Bell -->
+        <div class="position-relative" id="notifBell" style="cursor: pointer;">
+          <i class="bi bi-bell-fill fs-5" style="color: gold;"></i>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notifCount" style="display: none;">0</span>
+
+          <!-- Notifikasi Pop-up -->
+          <div class="position-absolute end-0 mt-2 z-3" id="notifPopup" style="display: none; min-width: 280px;">
+            <div class="card shadow">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <strong>Notifikasi</strong>
+              </div>
+              <ul class="list-group list-group-flush" id="notifList">
+                <li class="list-group-item text-muted text-center">Memuat...</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navbar Toggle -->
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Menu -->
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav align-items-lg-center gap-lg-3" id="navLinks">
+          <li class="nav-item"><a class="nav-link text-white" href="./event/daftar-event.html">Event</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="#">Hubungi Kami</a></li>
+          <li class="nav-item"><a class="btn btn-outline-light btn-sm" href="dashboard/dashboard-eo/tambah-event.html" id="buatEventBtn">Buat Event</a></li>
+          <li class="nav-item" id="navLogin">
+            <a class="btn btn-outline-light btn-sm" href="/login-register/login.html">Masuk</a>
+          </li>
+          <li class="nav-item dropdown d-none" id="userDropdown">
+            <button class="btn btn-outline-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+              <i class="bi bi-person-circle"></i> <span id="userName">User</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="#" id="profilSayaBtn">Profil Saya</a></li>
+              <li><hr class="dropdown-divider" /></li>
+              <li><button class="dropdown-item text-danger" id="btnLogout">Logout</button></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+  <!-- Hero -->
+  <main>
+  <div class="hero-banner">
+    <div class="hero-overlay"></div>
+    <div class="position-relative z-1 text-center px-3 px-md-5 d-flex flex-column justify-content-center align-items-center h-100 text-white">
+      <h1 class="text-uppercase fw-bold mb-4 display-5" style="text-shadow: 0 0 20px #ff4cff;">
+        #ExploreYourEvent
+      </h1>
+      <p id="hero-changing-text" class="fs-5 fw-medium text-break" style="transition: opacity 0.6s ease; text-shadow: 0 0 10px rgba(255,255,255,0.9);">
+        Temukan ribuan event seru dari konser musik, workshop kreatif, hingga seminar inspiratif — semua hanya di TiketKita.
+      </p>
+    </div>
+  </div>
+</main>
+
+<section class="fitur-section text-white py-5">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="fw-bold text-white display-5 mb-2">Mengapa Pilih TiketKita?</h2>
+      <p class="lead text-light opacity-80">Solusi paling cepat, praktis, dan modern untuk dunia event-mu!</p>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+      <!-- Card Beli Tiket -->
+      <div class="col-md-5">
+        <div class="fitur-card h-100 p-4 text-center glass-card card-hover-bounce">
+          <div class="icon-circle shadow-sm mb-3 bg-gradient-blue text-white mx-auto">
+            🎟️
+          </div>
+          <h5 class="fw-bold text-info mb-4">Cara Beli Tiket</h5>
+
+          <div class="fitur-item">
+            <span class="check-icon">✔</span>
+            <p>Jelajahi daftar event menarik</p>
+          </div>
+          <div class="fitur-item">
+            <span class="check-icon">✔</span>
+            <p>Pilih tiket & metode pembayaran</p>
+          </div>
+          <div class="fitur-item">
+            <span class="check-icon">✔</span>
+            <p>Bayar dengan aman & cepat</p>
+          </div>
+          <div class="fitur-item">
+            <span class="check-icon">✔</span>
+            <p>Tiket dikirim via email</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Buat Event -->
+      <div class="col-md-5">
+        <div class="fitur-card h-100 p-4 text-center glass-card card-hover-bounce">
+          <div class="icon-circle shadow-sm mb-3 bg-gradient-yellow text-dark mx-auto">
+            📅
+          </div>
+          <h5 class="fw-bold text-warning mb-4">Cara Buat Event</h5>
+
+          <div class="fitur-item">
+            <span class="check-icon">✔</span>
+            <p>Daftar sebagai Event Organizer</p>
+          </div>
+          <div class="fitur-item">
+            <span class="check-icon">✔</span>
+            <p>Buat event & upload gambar</p>
+          </div>
+          <div class="fitur-item">
+            <span class="check-icon">✔</span>
+            <p>Atur jenis & harga tiket</p>
+          </div>
+          <div class="fitur-item">
+            <span class="check-icon">✔</span>
+            <p>Publikasikan & mulai jualan</p>
+          </div>
+        </div>
+      </div>
+</section>
+
+  <!-- Footer -->
+  <footer class="navbar-custom text-white mt-5 pt-4 pb-3">
+    <div class="container text-center">
+      &copy; 2025 TiketKita. All rights reserved.
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+  const userId = localStorage.getItem('userId');
+  const userEmail = localStorage.getItem('userEmail');
+  const userName = localStorage.getItem('userName');
+  const userRole = localStorage.getItem('userRole');
+
+  if (userEmail && userRole) {
+    document.getElementById('navLogin').classList.add('d-none');
+    document.getElementById('userDropdown').classList.remove('d-none');
+    document.getElementById('userName').textContent = userName || 'User';
+
+    let roleLabel = userRole === 'admin' ? 'Admin' :
+                    userRole === 'eo' ? 'Event Organizer' :
+                    'User';
+
+    const roleItem = document.createElement('li');
+    roleItem.innerHTML = `<span class="dropdown-item-text text-muted"><i class="bi bi-person-badge me-2"></i>${roleLabel}</span>`;
+    document.querySelector('#userDropdown .dropdown-menu').prepend(roleItem);
+  }
+
+  document.getElementById('btnLogout').addEventListener('click', () => {
+    localStorage.clear();
+    window.location.href = '/login-register/login.html';
+  });
+
+  document.getElementById('profilSayaBtn').addEventListener('click', (e) => {
+    e.preventDefault();
+    if (userRole === 'admin') {
+      window.location.href = '/dashboard/dashboard-admin/dashboard-admin.html';
+    } else if (userRole === 'eo') {
+      window.location.href = '/dashboard/dashboard-eo/dashboard-eo.html';
+    } else if (userRole === 'user') {
+      window.location.href = '/dashboard/dashboard-user/dashboard-user.html';
+    } else {
+      window.location.href = '/login-register/login.html';
+    }
+  });
+
+  document.getElementById('buatEventBtn').addEventListener('click', (e) => {
+    e.preventDefault();
+    if (userRole === 'eo') {
+      window.location.href = '/dashboard/dashboard-eo/tambah-event.html';
+    } else {
+      alert('Hanya EO yang bisa membuat event.');
+      window.location.href = '/login-register/login.html';
+    }
+  });
+
+  // 🛎️ Notifikasi
+  async function loadNotificationCount() {
+    if (!userEmail) return;
+
+    try {
+      const res = await fetch(`http://localhost:3000/api/user/notifications?email=${userEmail}`);
+      const data = await res.json();
+      const notifBadge = document.getElementById('notifCount');
+      const notifList = document.getElementById('notifList');
+      const notifBell = document.getElementById('notifBell');
+
+      if (Array.isArray(data) && data.length > 0) {
+        notifBadge.textContent = data.length;
+        notifBadge.style.display = 'inline-block';
+        notifBell.classList.add('ringing');
+
+        notifList.innerHTML = '';
+        data.slice(0, 5).forEach(n => {
+          const li = document.createElement('li');
+          li.className = 'list-group-item';
+          li.innerHTML = `<strong>${n.title}</strong><br><small>${n.message}</small>`;
+          notifList.appendChild(li);
+        });
+      } else {
+        notifBadge.style.display = 'none';
+        notifBell.classList.remove('ringing');
+        notifList.innerHTML = `<li class="list-group-item text-muted text-center">Tidak ada notifikasi.</li>`;
+      }
+    } catch (err) {
+      console.error('❌ Gagal muat notifikasi:', err.message);
+    }
+  }
+
+  document.getElementById('notifBell').addEventListener('click', async () => {
+    const popup = document.getElementById('notifPopup');
+    await loadNotificationCount();
+    popup.style.display = popup.style.display === 'none' ? 'block' : 'none';
+  });
+
+  window.addEventListener('DOMContentLoaded', () => {
+    loadNotificationCount();
+  });
+
+  // ✨ Rotasi teks hero
+  const messages = [
+    "Temukan ribuan event seru dari konser musik, workshop kreatif, hingga seminar inspiratif — semua hanya di TiketKita.",
+    "Bingung akhir pekan mau ke mana? Jelajahi ratusan event menarik di sekitarmu, cukup dari genggaman tangan.",
+    "Punya ide event keren? Daftarkan sekarang dan raih perhatian ribuan pengunjung hanya lewat TiketKita.",
+    "TiketKita: solusi lengkap untuk jual tiket, promosi event, dan menjangkau audiens baru dengan mudah.",
+    "Dari Pop Punk, jazz, startup talk, hingga festival budaya — apapun minatmu, ada tempatnya di TiketKita."
+  ];
+
+  let current = 0;
+  const text = document.getElementById("hero-changing-text");
+  setInterval(() => {
+    text.style.opacity = 0;
+    setTimeout(() => {
+      current = (current + 1) % messages.length;
+      text.textContent = messages[current];
+      text.style.opacity = 1;
+    }, 600);
+  }, 9000);
+</script>
+</body>
+</html>
