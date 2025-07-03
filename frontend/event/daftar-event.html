@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Daftar Event | TiketKita</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/style.css"/>
+</head>
+<body class="gradient-bg">
+  <section id="daftar-event" class="py-5">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-white fw-bold fade-up">Daftar Event Tersedia</h2>
+        <a href="/dashboard.html" class="btn btn-outline-light rounded-pill">Home</a>
+      </div>
+
+      <div id="eventList" class="row g-4 justify-content-center">
+        <!-- Event akan dimuat lewat JavaScript -->
+      </div>
+    </div>
+  </section>
+
+  <footer class="bg-dark text-white text-center py-3">
+    &copy; 2025 TiketKita. All rights reserved.
+  </footer>
+
+  <script>
+    async function loadEvents() {
+      try {
+        const res = await fetch("http://localhost:3000/api/events?status=diterima");
+        const events = await res.json();
+        const eventList = document.getElementById("eventList");
+        eventList.innerHTML = "";
+
+        if (Array.isArray(events) && events.length > 0) {
+          events.forEach((evt, index) => {
+            const col = document.createElement("div");
+            col.className = "col-md-6 fade-up fade-delay-" + ((index % 3) + 1);
+            col.innerHTML = `
+              <div class="card card-box shadow-lg border-0 h-100">
+                <div class="card-body">
+                  <h5 class="card-title fw-bold">${evt.nama_event}</h5>
+                  <p class="text-muted small mb-1">
+                    📍 ${evt.lokasi || "Lokasi belum ditentukan"}
+                  </p>
+                  <p class="text-muted small mb-1">
+                    📅 ${evt.tanggal ? new Date(evt.tanggal).toLocaleDateString("id-ID") : "Tanggal belum ditentukan"}
+                  </p>
+                  <p class="text-dark small">
+                    ${(evt.deskripsi && evt.deskripsi.length > 120) ? evt.deskripsi.slice(0, 120) + "..." : evt.deskripsi || "Tidak ada deskripsi"}
+                  </p>
+                  <a href="/event/detail.html?id=${evt.event_id}" class="btn btn-primary rounded-pill w-100 mt-2">
+                    🎟️ Lihat Detail Event
+                  </a>
+                </div>
+              </div>`;
+            eventList.appendChild(col);
+          });
+        } else {
+          eventList.innerHTML = `<div class="col-12 text-center"><p class="text-light">Belum ada event yang tersedia.</p></div>`;
+        }
+      } catch (error) {
+        console.error("❌ Gagal mengambil event:", error);
+        document.getElementById("eventList").innerHTML =
+          `<div class="col-12 text-center text-danger">Gagal memuat event.</div>`;
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", loadEvents);
+  </script>
+</body>
+</html>
